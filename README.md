@@ -17,7 +17,7 @@ This code is designed to process a SIF (Structured Information File) and update 
 
 4. Run the script:
 
-      **Copy code**
+      **ConvertO.py**
 
 5. When prompted, enter the name of the SIF file you want to convert, including the file extension (e.g., demo1.sif).
    
