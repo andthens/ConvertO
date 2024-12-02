@@ -18,17 +18,24 @@ def update_names(file_path, new_io_name):
             integration_object.set("NAME", new_io_name)
             integration_object.set("XML_TAG", new_io_name.replace(" ", ""))
 
+        ic_name_map = {}
         for component in root.findall(".//INTEGRATION_COMPONENT"):
             xml_tag = component.get("XML_TAG")
+            xml_name = component.get("NAME")
             if xml_tag:
                 component.set("NAME", xml_tag)
+                ic_name_map[xml_name] = xml_tag
 
             for field in component.findall(".//INTEGRATION_COMPONENT_FIELD"):
                 field_xml_tag = field.get("XML_TAG")
                 if field_xml_tag:
                     field.set("NAME", field_xml_tag)
 
-        # Save updated file
+        for component in root.findall(".//INTEGRATION_COMPONENT"):
+            parent_ic_name = component.get("PARENT_INTEGRATION_COMPONENT")
+            if parent_ic_name and parent_ic_name in ic_name_map:
+                component.set("PARENT_INTEGRATION_COMPONENT", ic_name_map[parent_ic_name])
+
         output_file = "updated_" + file_path.split('/')[-1]
         tree.write(output_file, encoding="UTF-8", xml_declaration=True)
         return f"Updated XML file saved as: {output_file}"
@@ -39,8 +46,8 @@ class IONameDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("")  # Remove the default title
-        self.setWindowFlags(Qt.FramelessWindowHint)  # Frameless window
+        self.setWindowTitle("")
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setFixedSize(250, 200)
         self.setStyleSheet("""
             QDialog {
@@ -105,7 +112,6 @@ class IONameDialog(QDialog):
 
         self.setLayout(layout)
 
-        # Variables for drag functionality
         self._drag_active = False
         self._drag_position = None
 
@@ -137,7 +143,7 @@ class IONameDialog(QDialog):
             new_y = parent_rect.top() + (parent_rect.height() - dialog_rect.height()) // 2"""
             self.move(100, 100)
         super().showEvent(event)
-        
+
     def get_input(self):
         return self.input_field.text().strip()
 
@@ -312,8 +318,8 @@ class MainWindow(QMainWindow):
                 self.thread = UpdateThreadWithIOName(file_path, self.new_io_name)
                 self.thread.finished.connect(self.on_update_finished)
                 self.thread.start()
-                
-                
+
+
 
     def get_io_name_input(self):
         dialog = IONameDialog(self)
