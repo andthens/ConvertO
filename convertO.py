@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
 
         top_bar_container = QWidget()
         top_bar_container.setLayout(top_bar)
-        top_bar_container.setStyleSheet("background-color: transparent;")  # Transparent bar for a cleaner look
+        top_bar_container.setStyleSheet("background-color: transparent;") 
 
         return top_bar_container
 
@@ -199,7 +199,7 @@ class MainWindow(QMainWindow):
         )
         if file_path:
             self.processing_label.setText("Processing... Please wait.")
-            #self.status_label.setText("")  # Clear the Select label text
+            #self.status_label.setText("") 
 
             self.thread = UpdateThread(file_path)
             self.thread.finished.connect(self.on_update_finished)
